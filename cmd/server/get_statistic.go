@@ -1,10 +1,10 @@
-package daemon
+package server
 
 import (
-	"../parser"
+	"../../parser"
 	"github.com/sirupsen/logrus"
 	"time"
-	pb "../proto"
+	pb "../../proto"
 )
 
 func (s server) GetStatistic(in *pb.Request, srv pb.StreamService_GetStatisticServer) error {
@@ -13,8 +13,8 @@ func (s server) GetStatistic(in *pb.Request, srv pb.StreamService_GetStatisticSe
 	n := int(in.N)
 	var pd parser.ParsedData
 	for {
-		if len(statisticStorage) >= m {
-			pd = parser.GetAverageInfo(statisticStorage, m)
+		if len(statistics) >= m {
+			pd = parser.GetAverageInfo(statistics, m)
 		} else {
 			continue
 		}
@@ -63,7 +63,7 @@ func (s server) GetStatistic(in *pb.Request, srv pb.StreamService_GetStatisticSe
 			NeededStatistic: s.statistics,
 		}
 		if err := srv.Send(&response); err != nil {
-			logrus.Errorf("send error %v", err)
+			logrus.WithError(err).Fatal("send err ")
 			return err
 		}
 		time.Sleep(time.Duration(n) * time.Second)

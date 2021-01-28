@@ -1,4 +1,4 @@
 ## Запуск сервера
-go run main.go
+PORT=8080 go run main.go
 ## Запуск клиента
-go run client.go
+go run ./cmd/client/client.go

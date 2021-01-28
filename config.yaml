@@ -1,8 +1,8 @@
   server:
     port: 8080
-    load_average: 1
-    cpu_load: 1
-    disk_load: 1
-    disk_free: 1
-    net_stat: 1
-    top_talkers: 1
+    load_average: true
+    cpu_load: true
+    disk_load: true
+    disk_free: true
+    net_stat: true
+    top_talkers: true

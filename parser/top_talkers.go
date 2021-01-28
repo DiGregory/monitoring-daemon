@@ -12,14 +12,24 @@ var reBPS = regexp.MustCompile(`send (\d+.\d+)`)
 var reProtocol = regexp.MustCompile(`udp|tcp`)
 var reAddress = regexp.MustCompile(`\w+\.\w+\.\w+\.\S+`)
 
-func GetTopTalkers(outChan chan interface{}, errChan chan error, wg *sync.WaitGroup) () {
+type TopTalkers struct {
+	ProtocolBytes map[string]int32
+	Source        []string
+	Destination   []string
+	Protocol      []string
+	BPS           []float32
+}
+
+func GetTopTalkers(outChan chan interface{}, errChan chan error, wg *sync.WaitGroup) {
 	defer wg.Done()
+	var tt TopTalkers
 	//получение процессов
 	rawDataString, err := execCommand(parseRequestParams("ss -itupn"))
 	if err != nil {
 		errChan <- err
+		outChan <- &tt
+		return
 	}
-	var tt TopTalkers
 	//считывание строк по две, кроме заголовка
 	rawRows := reStringDouble.FindAllString(*rawDataString, -1)[1:]
 	for _, r := range rawRows {
@@ -28,12 +38,14 @@ func GetTopTalkers(outChan chan interface{}, errChan chan error, wg *sync.WaitGr
 		tt.Protocol = append(tt.Protocol, protocol)
 		//количество посланных  байт
 		sentBytes := reBytes.FindStringSubmatch(r)
-		if len(sentBytes) == 0 {
+		if len(sentBytes) < 2 {
 			continue
 		}
 		sb, err := strconv.Atoi(sentBytes[1])
 		if err != nil {
 			errChan <- err
+			outChan <- &tt
+			return
 		}
 		//байты по протоколам
 		tt.ProtocolBytes = make(map[string]int32)
@@ -44,18 +56,24 @@ func GetTopTalkers(outChan chan interface{}, errChan chan error, wg *sync.WaitGr
 		}
 		//BPS
 		sentBPS := reBPS.FindStringSubmatch(r)
-		if len(sentBPS) == 0 {
+		if len(sentBPS) < 2 {
 			errChan <- nilOutputErr
+			outChan <- &tt
+			return
 		}
 		bps, err := strconv.ParseFloat(sentBPS[1], 64)
 		if err != nil {
 			errChan <- err
+			outChan <- &tt
+			return
 		}
 		tt.BPS = append(tt.BPS, float32(bps))
 		//адреса отправки и назначения
 		addresses := reAddress.FindAllString(r, -1)
-		if len(addresses) == 0 {
+		if len(addresses) < 2 {
 			errChan <- nilOutputErr
+			outChan <- &tt
+			return
 		}
 		tt.Source = append(tt.Source, addresses[0])
 		tt.Destination = append(tt.Destination, addresses[1])

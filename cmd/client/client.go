@@ -1,9 +1,7 @@
 package main
 
 import (
-	"log"
-
-	pb "./proto"
+	pb "../../proto"
 
 	"google.golang.org/grpc"
 	"io"
@@ -12,6 +10,7 @@ import (
 	"time"
 	"text/tabwriter"
 	"os"
+	"github.com/sirupsen/logrus"
 )
 
 func statisticOut(response *pb.Response) {
@@ -99,7 +98,7 @@ func main() {
 	// dial server
 	conn, err := grpc.Dial(":8080", grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("can not connect with server %v", err)
+		logrus.WithError(err).Error("can not connect with server")
 	}
 	ctx := context.Background()
 	// create stream
@@ -107,7 +106,7 @@ func main() {
 	in := &pb.Request{N: requestN, M: requestM}
 	stream, err := client.GetStatistic(ctx, in)
 	if err != nil {
-		log.Fatalf("open stream error %v", err)
+		logrus.WithError(err).Fatal("open stream error")
 	}
 
 	done := make(chan bool)
@@ -119,7 +118,7 @@ func main() {
 			return
 		}
 		if err != nil {
-			log.Fatalf("cannot receive %v", err)
+			logrus.WithError(err).Fatal("cannot receive data")
 		}
 		if resp != nil {
 			//логирование
@@ -129,5 +128,5 @@ func main() {
 	}
 
 	<-done
-	log.Printf("finished")
+	logrus.Info("finished")
 }

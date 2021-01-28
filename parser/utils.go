@@ -90,7 +90,7 @@ func parseDataFrame(dataFrame string, re *regexp.Regexp, rowIndex int, offset in
 	return sortedDataFrame, nil
 }
 
-func round(x float32) (float32) {
+func round(x float32) float32 {
 
 	return float32(math.Floor(float64(x*100)) / 100)
 }
@@ -208,12 +208,14 @@ func divisionDiskFree(free *DiskFree, m int) (dFree DiskFree) {
 }
 
 //получение усредненной статистики за m секунд
-func GetAverageInfo(pd []ParsedData, m int) (ParsedData) {
-	var la LoadAverage
-	var cl CpuLoad
-	var df DiskFree
-	var dl DiskLoad
-	var average ParsedData
+func GetAverageInfo(pd []ParsedData, m int) ParsedData {
+	var (
+		la      LoadAverage
+		cl      CpuLoad
+		df      DiskFree
+		dl      DiskLoad
+		average ParsedData
+	)
 	for _, v := range pd[len(pd)-m:] {
 		la = sumLoadAverage(&la, &v.LoadAverage)
 		cl = sumCpuLoad(&cl, &v.CpuLoad)

@@ -14,8 +14,17 @@ var statisticFunctions = []func(chan interface{}, chan error, *sync.WaitGroup){
 	GetDiskFree,
 	GetNetStat,
 	GetTopTalkers,
-
 }
+
+type ParsedData struct {
+	LoadAverage LoadAverage
+	CpuLoad     CpuLoad
+	DiskLoad    DiskLoad
+	DiskFree    DiskFree
+	NetStat     NetStat
+	TopTalkers  TopTalkers
+}
+
 //раз в секунду собирает нужную статистику
 func ParseStatistic(indeedStatistic []bool, pd chan ParsedData, ctx context.Context) () {
 	var wg sync.WaitGroup
@@ -37,7 +46,6 @@ func ParseStatistic(indeedStatistic []bool, pd chan ParsedData, ctx context.Cont
 			case <-ctx.Done():
 				return
 			case _ = <-ticker.C:
-
 				wg.Add(statisticNum)
 				for i, statisticFunc := range statisticFunctions {
 					if indeedStatistic[i] {
@@ -57,7 +65,7 @@ func ParseStatistic(indeedStatistic []bool, pd chan ParsedData, ctx context.Cont
 			case <-ctx.Done():
 				return
 			case err := <-errChan:
-				logrus.Error("parser error: ", err)
+				logrus.WithError(err).Error("parser error")
 			case stat := <-statisticChan:
 				switch v := stat.(type) {
 				case *LoadAverage:

@@ -1,13 +1,14 @@
-package daemon
+package server
 
 import (
-	pb "../proto"
+	pb "../../proto"
 	"context"
-	"../parser"
+	"../../parser"
 	"net"
 	"log"
 	"google.golang.org/grpc"
 	"fmt"
+	"github.com/sirupsen/logrus"
 )
 
 //
@@ -16,12 +17,12 @@ type server struct {
 	statistics []bool
 }
 
-var statisticStorage []parser.ParsedData
+var statistics []parser.ParsedData
 
 
 
 //создание сервера
-func CreateDaemon(port int32, indeedStatistics []bool) {
+func Listen(port int32, indeedStatistics []bool) {
 	//создание сервера
 	grpcServer := server{port: port, statistics: indeedStatistics}
 	s := grpc.NewServer()
@@ -29,7 +30,7 @@ func CreateDaemon(port int32, indeedStatistics []bool) {
 	// create listener
 	lis, err := net.Listen("tcp", ":"+fmt.Sprintf("%d", grpcServer.port))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		logrus.WithError(err).Fatal("failed to listen")
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	dataChan := make(chan parser.ParsedData)
@@ -38,14 +39,14 @@ func CreateDaemon(port int32, indeedStatistics []bool) {
 		parser.ParseStatistic(indeedStatistics, dataChan, ctx)
 		for {
 			data := <-dataChan
-			statisticStorage = append(statisticStorage, data)
+			statistics = append(statistics, data)
 		}
 	}()
 
 	log.Println("start server")
 	if err := s.Serve(lis); err != nil {
 		cancel()
-		log.Fatalf("failed to serve: %v", err)
+		logrus.WithError(err).Fatal("failed to serve")
 	}
 
 }
