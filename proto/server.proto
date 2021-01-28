@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package protobuf;
+// protoc --go_out=plugins=grpc:. server.proto
+
+service StreamService {
+  rpc GetStatistic (Request) returns (stream Response) {}
+}
+
+message Request {
+  int32 n = 1;
+  int32 m = 2;
+}
+
+message Response {
+  LoadAverage LoadAverage = 1 ;
+  CpuLoad CpuLoad=2;
+  DiskLoad DiskLoad=3;
+  DiskFree DiskFree=4;
+  NetStat NetStat=5;
+  TopTalkers TopTalkers=6;
+  repeated int32 neededStatistic=7;
+}
+
+
+message LoadAverage  {
+	float Load1 = 1;
+	float Load5 = 2;
+	float Load15 = 3;
+}
+
+message CpuLoad  {
+	float UserLoad=1;
+	float SystemLoad=2;
+	float IDLELoad=3;
+}
+
+message DiskLoad  {
+	repeated string Names=1;
+	repeated float TPS=2;
+	repeated float WriteLoad =3;
+	repeated float ReadLoad =4;
+	CpuLoad CPU=5;
+}
+
+message DiskFree {
+	repeated string Names=1;
+	repeated float MBFree=2;
+	repeated float MBUses=3;
+	repeated float INodeFree=4;
+	repeated float INodeUses=5;
+}
+
+message NetStat  {
+	repeated string Protocols=1;
+	repeated string Address =2;
+	repeated string PID =3;
+	map<string,int32> States = 4;
+}
+
+message TopTalkers   {
+    map<string,int32> ProtocolBytes = 1;
+	repeated string Source   =2;
+	repeated string Destination =3;
+	repeated string Protocol   =4;
+	repeated float BPS =5;
+}

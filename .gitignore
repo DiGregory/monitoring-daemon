@@ -1,0 +1,4 @@
+.idea/
+*.txt
+*.pb.go
+vendor
