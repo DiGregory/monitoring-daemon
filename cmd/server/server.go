@@ -13,7 +13,7 @@ import (
 //
 type server struct {
 	port       int32
-	statistics []int32
+	statistics []bool
 }
 
 var statisticStorage []parser.ParsedData
@@ -21,7 +21,7 @@ var statisticStorage []parser.ParsedData
 
 
 //создание сервера
-func CreateDaemon(port int32, indeedStatistics []int32) {
+func CreateDaemon(port int32, indeedStatistics []bool) {
 	//создание сервера
 	grpcServer := server{port: port, statistics: indeedStatistics}
 	s := grpc.NewServer()

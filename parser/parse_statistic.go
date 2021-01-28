@@ -12,11 +12,12 @@ var statisticFunctions = []func(chan interface{}, chan error, *sync.WaitGroup){
 	GetCPULoad,
 	GetDiskLoad,
 	GetDiskFree,
-	GetTopTalkers,
 	GetNetStat,
+	GetTopTalkers,
+
 }
 //раз в секунду собирает нужную статистику
-func ParseStatistic(indeedStatistic []int32, pd chan ParsedData, ctx context.Context) () {
+func ParseStatistic(indeedStatistic []bool, pd chan ParsedData, ctx context.Context) () {
 	var wg sync.WaitGroup
 	var parsedData ParsedData
 	ticker := time.NewTicker(time.Second)
@@ -26,7 +27,7 @@ func ParseStatistic(indeedStatistic []int32, pd chan ParsedData, ctx context.Con
 	//сколько статистик собирать
 	statisticNum := 0
 	for _, v := range indeedStatistic {
-		if v == 1 {
+		if v   {
 			statisticNum += 1
 		}
 	}
@@ -39,7 +40,7 @@ func ParseStatistic(indeedStatistic []int32, pd chan ParsedData, ctx context.Con
 
 				wg.Add(statisticNum)
 				for i, statisticFunc := range statisticFunctions {
-					if indeedStatistic[i] == 1 {
+					if indeedStatistic[i] {
 						go statisticFunc(statisticChan, errChan, &wg)
 					}
 				}

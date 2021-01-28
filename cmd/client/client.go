@@ -18,15 +18,15 @@ func statisticOut(response *pb.Response) {
 	w := new(tabwriter.Writer)
 	fmt.Printf("\n\t\t%v\n\n", time.Now().Format(time.Stamp))
 	//system load
-	if response.NeededStatistic[0] == 1 {
+	if response.NeededStatistic[0] {
 		fmt.Printf("System load average: %v\n\n", response.LoadAverage)
 	}
 	//cpu load
-	if response.NeededStatistic[1] == 1 {
+	if response.NeededStatistic[1] {
 		fmt.Printf("CPU load average: %v\n\n", response.CpuLoad)
 	}
 	//disk load
-	if response.NeededStatistic[2] == 1 {
+	if response.NeededStatistic[2] {
 		fmt.Printf("Disk load: \n")
 		fmt.Printf("CPU : %v\n", response.DiskLoad.CPU)
 		w.Init(os.Stdout, 5, 0, 1, ' ', tabwriter.AlignRight)
@@ -41,7 +41,7 @@ func statisticOut(response *pb.Response) {
 		w.Flush()
 	}
 	//disk free
-	if response.NeededStatistic[3] == 1 {
+	if response.NeededStatistic[3] {
 		fmt.Printf("\nDisk free: \n")
 		w.Init(os.Stdout, 5, 0, 1, ' ', tabwriter.AlignRight)
 		fmt.Fprintf(w, "File system\t   MBFree\t MBUses\t INodeFree \t INodeUses\t \n")
@@ -56,7 +56,7 @@ func statisticOut(response *pb.Response) {
 		w.Flush()
 	}
 	//network
-	if response.NeededStatistic[4] == 1 {
+	if response.NeededStatistic[4] {
 		fmt.Printf("\nNetwork statistic: \n")
 		fmt.Printf("\nSockets states: \n")
 		for i, v := range response.NetStat.States {
@@ -74,7 +74,7 @@ func statisticOut(response *pb.Response) {
 		w.Flush()
 	}
 	//top talkers
-	if response.NeededStatistic[5] == 1 {
+	if response.NeededStatistic[5] {
 		fmt.Printf("\nTopTalkers: \n")
 		fmt.Printf("\nBytes by protocols: \n")
 		for i, v := range response.TopTalkers.ProtocolBytes {
@@ -123,7 +123,7 @@ func main() {
 		}
 		if resp != nil {
 			//логирование
-			 statisticOut(resp)
+			statisticOut(resp)
 		}
 
 	}

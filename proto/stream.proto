@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package protobuf;
-// protoc --go_out=plugins=grpc:. server.proto
+// protoc --go_out=plugins=grpc:. stream.proto
 
 service StreamService {
   rpc GetStatistic (Request) returns (stream Response) {}
@@ -19,7 +19,7 @@ message Response {
   DiskFree DiskFree=4;
   NetStat NetStat=5;
   TopTalkers TopTalkers=6;
-  repeated int32 neededStatistic=7;
+  repeated bool neededStatistic=7;
 }
 
 
