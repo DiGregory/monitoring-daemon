@@ -1,10 +1,10 @@
-package server
+package main
 
 import (
-	"../../parser"
+	"github.com/DiGregory/daemon/parser"
 	"github.com/sirupsen/logrus"
 	"time"
-	pb "../../proto"
+	pb "github.com/DiGregory/daemon/proto"
 )
 
 func (s server) GetStatistic(in *pb.Request, srv pb.StreamService_GetStatisticServer) error {

@@ -2,9 +2,9 @@ package parser
 
 import (
 	"sync"
-	"time"
 	"github.com/sirupsen/logrus"
 	"context"
+	"time"
 )
 
 var statisticFunctions = []func(chan interface{}, chan error, *sync.WaitGroup){
@@ -36,10 +36,11 @@ func ParseStatistic(indeedStatistic []bool, pd chan ParsedData, ctx context.Cont
 	//сколько статистик собирать
 	statisticNum := 0
 	for _, v := range indeedStatistic {
-		if v   {
+		if v {
 			statisticNum += 1
 		}
 	}
+
 	go func() {
 		for {
 			select {
@@ -59,6 +60,7 @@ func ParseStatistic(indeedStatistic []bool, pd chan ParsedData, ctx context.Cont
 			}
 		}
 	}()
+
 	go func() {
 		for {
 			select {

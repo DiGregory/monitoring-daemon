@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "../../proto"
+	pb "github.com/DiGregory/daemon/proto"
 
 	"google.golang.org/grpc"
 	"io"

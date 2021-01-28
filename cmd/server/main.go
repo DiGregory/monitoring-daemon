@@ -1,9 +1,9 @@
 package main
 
 import (
-	pb "../../proto"
+	pb "github.com/DiGregory/daemon/proto"
 	"context"
-	"../../parser"
+	"github.com/DiGregory/daemon/parser"
 	"net"
 	"log"
 	"google.golang.org/grpc"
